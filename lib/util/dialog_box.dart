@@ -161,18 +161,24 @@ class _DialogBoxState extends State<DialogBox> {
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
-                if (selectedDate != null)
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () {
-                      setState(() {
-                        selectedDate = null;
-                        selectedTime = null;
-                      });
-                    },
-                    tooltip: 'Clear date',
+                if (selectedDate != null) ...[
+                  const SizedBox(width: 8),
+                  SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () {
+                        setState(() {
+                          selectedDate = null;
+                          selectedTime = null;
+                        });
+                      },
+                      tooltip: 'Clear date',
+                      padding: EdgeInsets.zero,
+                    ),
                   ),
+                ],
               ],
             ),
             const SizedBox(height: 8),
@@ -193,17 +199,23 @@ class _DialogBoxState extends State<DialogBox> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  if (selectedTime != null)
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () {
-                        setState(() {
-                          selectedTime = null;
-                        });
-                      },
-                      tooltip: 'Clear time',
+                  if (selectedTime != null) ...[
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      width: 40,
+                      height: 40,
+                      child: IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () {
+                          setState(() {
+                            selectedTime = null;
+                          });
+                        },
+                        tooltip: 'Clear time',
+                        padding: EdgeInsets.zero,
+                      ),
                     ),
+                  ],
                 ],
               ),
             const SizedBox(height: 16),

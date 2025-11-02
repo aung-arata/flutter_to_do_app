@@ -304,13 +304,25 @@ class _HomePageState extends State<HomePage> {
                     Row(
                       children: [
                         Expanded(
-                          child: OutlinedButton.icon(
+                          child: OutlinedButton(
                             onPressed: selectDate,
-                            icon: const Icon(Icons.calendar_today),
-                            label: Text(
-                              selectedDate != null
-                                  ? '${selectedDate!.month}/${selectedDate!.day}/${selectedDate!.year}'
-                                  : 'Select Date',
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.calendar_today, size: 18),
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: Text(
+                                    selectedDate != null
+                                        ? '${selectedDate!.month}/${selectedDate!.day}/${selectedDate!.year}'
+                                        : 'Select Date',
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -320,7 +332,7 @@ class _HomePageState extends State<HomePage> {
                             width: 40,
                             height: 40,
                             child: IconButton(
-                              icon: const Icon(Icons.close),
+                              icon: const Icon(Icons.close, size: 20),
                               onPressed: () {
                                 setDialogState(() {
                                   selectedDate = null;
@@ -339,13 +351,25 @@ class _HomePageState extends State<HomePage> {
                       Row(
                         children: [
                           Expanded(
-                            child: OutlinedButton.icon(
+                            child: OutlinedButton(
                               onPressed: selectTime,
-                              icon: const Icon(Icons.access_time),
-                              label: Text(
-                                selectedTime != null
-                                    ? selectedTime!.format(context)
-                                    : 'Select Time (optional)',
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(Icons.access_time, size: 18),
+                                  const SizedBox(width: 8),
+                                  Flexible(
+                                    child: Text(
+                                      selectedTime != null
+                                          ? selectedTime!.format(context)
+                                          : 'Select Time (optional)',
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
@@ -355,7 +379,7 @@ class _HomePageState extends State<HomePage> {
                               width: 40,
                               height: 40,
                               child: IconButton(
-                                icon: const Icon(Icons.close),
+                                icon: const Icon(Icons.close, size: 20),
                                 onPressed: () {
                                   setDialogState(() {
                                     selectedTime = null;

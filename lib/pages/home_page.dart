@@ -280,18 +280,7 @@ class _HomePageState extends State<HomePage> {
               }
             }
 
-            Future<void> selectTime() async {
-              final TimeOfDay? picked = await showTimePicker(
-                context: context,
-                initialTime: selectedTime ?? TimeOfDay.now(),
-              );
-              if (picked != null) {
-                setDialogState(() {
-                  selectedTime = picked;
-                });
-              }
-            }
-            
+
             return AlertDialog(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
@@ -346,52 +335,6 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    if (selectedDate != null)
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton(
-                              onPressed: selectTime,
-                              style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(Icons.access_time, size: 18),
-                                  const SizedBox(width: 8),
-                                  Flexible(
-                                    child: Text(
-                                      selectedTime != null
-                                          ? selectedTime!.format(context)
-                                          : 'Select Time (optional)',
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          if (selectedTime != null) ...[
-                            const SizedBox(width: 8),
-                            SizedBox(
-                              width: 40,
-                              height: 40,
-                              child: IconButton(
-                                icon: const Icon(Icons.close, size: 20),
-                                onPressed: () {
-                                  setDialogState(() {
-                                    selectedTime = null;
-                                  });
-                                },
-                                tooltip: 'Clear time',
-                                padding: EdgeInsets.zero,
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
                     const SizedBox(height: 16),
                     const Align(
                       alignment: Alignment.centerLeft,

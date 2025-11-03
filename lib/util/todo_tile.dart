@@ -49,6 +49,9 @@ class ToDoTile extends StatefulWidget {
 }
 
 class _ToDoTileState extends State<ToDoTile> {
+  // Delay to ensure previous dialog is fully closed before opening a new one
+  static const Duration _dialogTransitionDelay = Duration(milliseconds: 100);
+  
   bool _showSubNotes = false;
 
   void _showAddSubNoteDialog() {
@@ -208,7 +211,7 @@ class _ToDoTileState extends State<ToDoTile> {
                 onTap: () {
                   Navigator.of(dialogContext).pop();
                   // Add a small delay to ensure the previous dialog is fully closed
-                  Future.delayed(const Duration(milliseconds: 100), () {
+                  Future.delayed(_dialogTransitionDelay, () {
                     _showColorPicker(context);
                   });
                 },

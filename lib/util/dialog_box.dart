@@ -154,7 +154,7 @@ class _DialogBoxState extends State<DialogBox> {
                       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                     ),
                     child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                      mainAxisSize: MainAxisSize.max,
                       children: [
                         const Icon(Icons.calendar_today, size: 18),
                         const SizedBox(width: 8),
@@ -201,7 +201,7 @@ class _DialogBoxState extends State<DialogBox> {
                         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                       ),
                       child: Row(
-                        mainAxisSize: MainAxisSize.min,
+                        mainAxisSize: MainAxisSize.max,
                         children: [
                           const Icon(Icons.access_time, size: 18),
                           const SizedBox(width: 8),

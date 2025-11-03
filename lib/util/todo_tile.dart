@@ -49,7 +49,8 @@ class ToDoTile extends StatefulWidget {
 }
 
 class _ToDoTileState extends State<ToDoTile> {
-  // Delay to ensure previous dialog is fully closed before opening a new one
+  // Delay to ensure options dialog is fully closed before opening color picker dialog
+  // 100ms is sufficient for the dialog close animation to complete
   static const Duration _dialogTransitionDelay = Duration(milliseconds: 100);
   
   bool _showSubNotes = false;

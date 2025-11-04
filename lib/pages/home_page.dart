@@ -176,20 +176,17 @@ class _HomePageState extends State<HomePage> {
   }
 
   void deleteTask(int index) {
-    // Store task and trash index for undo
+    // Store a copy of the task for undo
     final deletedTask = Map<String, dynamic>.from(db.toDoList[index]);
     final originalIndex = index;
+    final deletedAtTimestamp = DateTime.now().toIso8601String();
     
     setState(() {
       // Move task to trash instead of deleting
       var task = db.toDoList[index];
-      task['deletedAt'] = DateTime.now().toIso8601String();
-      final trashIndex = db.trash.length;
+      task['deletedAt'] = deletedAtTimestamp;
       db.trash.add(task);
       db.toDoList.removeAt(index);
-      
-      // Store trash index for undo
-      deletedTask['_undoTrashIndex'] = trashIndex;
     });
     db.updateDatabase();
     
@@ -202,14 +199,22 @@ class _HomePageState extends State<HomePage> {
           label: 'Undo',
           onPressed: () {
             setState(() {
-              // Find and remove from trash using the stored index
-              final trashIndex = deletedTask['_undoTrashIndex'] as int;
-              if (trashIndex < db.trash.length) {
+              // Find the task in trash by matching name and deletedAt timestamp
+              final trashIndex = db.trash.indexWhere((item) => 
+                item['name'] == deletedTask['name'] && 
+                item['deletedAt'] == deletedAtTimestamp
+              );
+              
+              if (trashIndex != -1) {
                 var restoredTask = Map<String, dynamic>.from(db.trash[trashIndex]);
                 restoredTask.remove('deletedAt');
-                restoredTask.remove('_undoTrashIndex');
                 db.trash.removeAt(trashIndex);
-                db.toDoList.insert(originalIndex, restoredTask);
+                // Insert at original position if possible, otherwise add to end
+                if (originalIndex <= db.toDoList.length) {
+                  db.toDoList.insert(originalIndex, restoredTask);
+                } else {
+                  db.toDoList.add(restoredTask);
+                }
               }
             });
             db.updateDatabase();

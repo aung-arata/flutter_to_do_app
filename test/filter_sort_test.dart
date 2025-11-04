@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:to_do_app/data/database.dart';
+import 'package:to_do_app/util/date_utils.dart' as date_utils;
 
 void main() {
   group('Filter Feature Tests', () {
@@ -196,15 +197,6 @@ void main() {
   });
 
   group('Date Sorting Tests', () {
-    DateTime? parseDateTimeSafe(String? dateString) {
-      if (dateString == null) return null;
-      try {
-        return DateTime.parse(dateString);
-      } catch (e) {
-        return null;
-      }
-    }
-
     test('sort by created date - most recent first', () {
       final db = ToDoDatabase();
       final now = DateTime.now();
@@ -237,8 +229,8 @@ void main() {
       
       // Sort by created date (most recent first)
       db.toDoList.sort((a, b) {
-        DateTime? dateA = parseDateTimeSafe(a['createdAt']);
-        DateTime? dateB = parseDateTimeSafe(b['createdAt']);
+        DateTime? dateA = date_utils.parseDateTimeSafe(a['createdAt']);
+        DateTime? dateB = date_utils.parseDateTimeSafe(b['createdAt']);
         if (dateA == null && dateB == null) return 0;
         if (dateA == null) return 1;
         if (dateB == null) return -1;
@@ -282,8 +274,8 @@ void main() {
       
       // Sort by due date (earliest first)
       db.toDoList.sort((a, b) {
-        DateTime? dateA = parseDateTimeSafe(a['dueDate']);
-        DateTime? dateB = parseDateTimeSafe(b['dueDate']);
+        DateTime? dateA = date_utils.parseDateTimeSafe(a['dueDate']);
+        DateTime? dateB = date_utils.parseDateTimeSafe(b['dueDate']);
         if (dateA == null && dateB == null) return 0;
         if (dateA == null) return 1;
         if (dateB == null) return -1;
@@ -327,8 +319,8 @@ void main() {
       
       // Sort by due date (earliest first, nulls last)
       db.toDoList.sort((a, b) {
-        DateTime? dateA = parseDateTimeSafe(a['dueDate']);
-        DateTime? dateB = parseDateTimeSafe(b['dueDate']);
+        DateTime? dateA = date_utils.parseDateTimeSafe(a['dueDate']);
+        DateTime? dateB = date_utils.parseDateTimeSafe(b['dueDate']);
         if (dateA == null && dateB == null) return 0;
         if (dateA == null) return 1;
         if (dateB == null) return -1;

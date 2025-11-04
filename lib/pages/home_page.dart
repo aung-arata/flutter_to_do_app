@@ -8,6 +8,7 @@ import 'package:to_do_app/util/dialog_box.dart';
 import 'package:to_do_app/util/todo_tile.dart';
 import 'package:to_do_app/util/group_tile.dart';
 import 'package:to_do_app/util/group_dialog.dart';
+import 'package:to_do_app/util/date_utils.dart' as date_utils;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -50,7 +51,7 @@ class _HomePageState extends State<HomePage> {
       if (wasCompleted == false && task['completed'] == true && task['recurrence'] != null) {
         // Task was just completed and has recurrence - create a new instance
         final recurrence = task['recurrence'];
-        DateTime? currentDate = _parseDateTimeSafe(task['dueDate']);
+        DateTime? currentDate = date_utils.parseDateTimeSafe(task['dueDate']);
         
         if (currentDate != null) {
           DateTime newDate;
@@ -175,12 +176,20 @@ class _HomePageState extends State<HomePage> {
   }
 
   void deleteTask(int index) {
+    // Store task and trash index for undo
+    final deletedTask = Map<String, dynamic>.from(db.toDoList[index]);
+    final originalIndex = index;
+    
     setState(() {
       // Move task to trash instead of deleting
       var task = db.toDoList[index];
       task['deletedAt'] = DateTime.now().toIso8601String();
+      final trashIndex = db.trash.length;
       db.trash.add(task);
       db.toDoList.removeAt(index);
+      
+      // Store trash index for undo
+      deletedTask['_undoTrashIndex'] = trashIndex;
     });
     db.updateDatabase();
     
@@ -193,10 +202,15 @@ class _HomePageState extends State<HomePage> {
           label: 'Undo',
           onPressed: () {
             setState(() {
-              // Remove from trash and add back to todolist
-              var restoredTask = db.trash.removeLast();
-              restoredTask.remove('deletedAt');
-              db.toDoList.insert(index, restoredTask);
+              // Find and remove from trash using the stored index
+              final trashIndex = deletedTask['_undoTrashIndex'] as int;
+              if (trashIndex < db.trash.length) {
+                var restoredTask = Map<String, dynamic>.from(db.trash[trashIndex]);
+                restoredTask.remove('deletedAt');
+                restoredTask.remove('_undoTrashIndex');
+                db.trash.removeAt(trashIndex);
+                db.toDoList.insert(originalIndex, restoredTask);
+              }
             });
             db.updateDatabase();
           },
@@ -267,18 +281,11 @@ class _HomePageState extends State<HomePage> {
     return '${time.hour}:${time.minute.toString().padLeft(2, '0')}';
   }
 
-  DateTime? _parseDateTimeSafe(String? dateString) {
-    if (dateString == null) return null;
-    try {
-      return DateTime.parse(dateString);
-    } catch (e) {
-      return null;
-    }
-  }
+
 
   void editTaskDateTime(int taskIndex) {
     final task = db.toDoList[taskIndex];
-    DateTime? currentDate = _parseDateTimeSafe(task['dueDate']);
+    DateTime? currentDate = date_utils.parseDateTimeSafe(task['dueDate']);
     TimeOfDay? currentTime = _parseTimeOfDay(task['dueTime']);
     String? currentRecurrence = task['recurrence'];
     
@@ -767,8 +774,8 @@ class _HomePageState extends State<HomePage> {
       });
     } else if (_sortBy == 'createdDate') {
       tasks.sort((a, b) {
-        DateTime? dateA = _parseDateTimeSafe(a.value['createdAt']);
-        DateTime? dateB = _parseDateTimeSafe(b.value['createdAt']);
+        DateTime? dateA = date_utils.parseDateTimeSafe(a.value['createdAt']);
+        DateTime? dateB = date_utils.parseDateTimeSafe(b.value['createdAt']);
         if (dateA == null && dateB == null) return 0;
         if (dateA == null) return 1;
         if (dateB == null) return -1;
@@ -777,8 +784,8 @@ class _HomePageState extends State<HomePage> {
       });
     } else if (_sortBy == 'dueDate') {
       tasks.sort((a, b) {
-        DateTime? dateA = _parseDateTimeSafe(a.value['dueDate']);
-        DateTime? dateB = _parseDateTimeSafe(b.value['dueDate']);
+        DateTime? dateA = date_utils.parseDateTimeSafe(a.value['dueDate']);
+        DateTime? dateB = date_utils.parseDateTimeSafe(b.value['dueDate']);
         // Tasks with no due date go to the end
         if (dateA == null && dateB == null) return 0;
         if (dateA == null) return 1;
@@ -949,7 +956,7 @@ class _HomePageState extends State<HomePage> {
                 taskCompleted: task['completed'] ?? false,
                 taskColor: task['color'] ?? 'yellow',
                 subNotes: task['subNotes'] ?? [],
-                dueDate: _parseDateTimeSafe(task['dueDate']),
+                dueDate: date_utils.parseDateTimeSafe(task['dueDate']),
                 dueTime: _parseTimeOfDay(task['dueTime']),
                 recurrence: task['recurrence'],
                 onChanged: (value) => checkBoxChanged(value, i),
@@ -1004,7 +1011,7 @@ class _HomePageState extends State<HomePage> {
                     taskCompleted: task['completed'] ?? false,
                     taskColor: task['color'] ?? 'yellow',
                     subNotes: task['subNotes'] ?? [],
-                    dueDate: _parseDateTimeSafe(task['dueDate']),
+                    dueDate: date_utils.parseDateTimeSafe(task['dueDate']),
                     dueTime: _parseTimeOfDay(task['dueTime']),
                     recurrence: task['recurrence'],
                     onChanged: (value) => checkBoxChanged(value, i),

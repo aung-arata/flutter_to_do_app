@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:to_do_app/data/database.dart';
 import 'package:to_do_app/util/color_utils.dart';
+import 'package:to_do_app/util/date_utils.dart' as date_utils;
 
 class TrashPage extends StatefulWidget {
   const TrashPage({super.key});
@@ -123,17 +124,8 @@ class _TrashPageState extends State<TrashPage> {
     );
   }
 
-  DateTime? _parseDateTimeSafe(String? dateString) {
-    if (dateString == null) return null;
-    try {
-      return DateTime.parse(dateString);
-    } catch (e) {
-      return null;
-    }
-  }
-
   String _formatDeletedTime(String? deletedAtString) {
-    final deletedAt = _parseDateTimeSafe(deletedAtString);
+    final deletedAt = date_utils.parseDateTimeSafe(deletedAtString);
     if (deletedAt == null) return 'Unknown time';
     
     final now = DateTime.now();

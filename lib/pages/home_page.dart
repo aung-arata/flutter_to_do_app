@@ -3,11 +3,11 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:to_do_app/data/auth_service.dart';
 import 'package:to_do_app/data/database.dart';
 import 'package:to_do_app/pages/login_page.dart';
+import 'package:to_do_app/pages/settings_page.dart';
 import 'package:to_do_app/util/dialog_box.dart';
 import 'package:to_do_app/util/todo_tile.dart';
 import 'package:to_do_app/util/group_tile.dart';
 import 'package:to_do_app/util/group_dialog.dart';
-import 'package:to_do_app/util/color_utils.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -24,8 +24,7 @@ class _HomePageState extends State<HomePage> {
   
   // Filter and sort state
   String _filterStatus = 'all'; // 'all', 'completed', 'incomplete'
-  String? _filterColor; // null = all colors
-  String _sortBy = 'none'; // 'none', 'name', 'completed'
+  String _sortBy = 'none'; // 'none', 'name', 'completed', 'createdDate', 'dueDate'
 
   @override
   void initState() {
@@ -90,6 +89,7 @@ class _HomePageState extends State<HomePage> {
             'dueDate': newDate.toIso8601String(),
             'dueTime': task['dueTime'],
             'recurrence': recurrence,
+            'createdAt': DateTime.now().toIso8601String(),
           });
         }
       }
@@ -111,6 +111,7 @@ class _HomePageState extends State<HomePage> {
         'dueDate': dueDate?.toIso8601String(),
         'dueTime': dueTime != null ? _formatTimeOfDay(dueTime) : null,
         'recurrence': recurrence,
+        'createdAt': DateTime.now().toIso8601String(),
       });
       _controller.clear();
     });
@@ -175,9 +176,33 @@ class _HomePageState extends State<HomePage> {
 
   void deleteTask(int index) {
     setState(() {
+      // Move task to trash instead of deleting
+      var task = db.toDoList[index];
+      task['deletedAt'] = DateTime.now().toIso8601String();
+      db.trash.add(task);
       db.toDoList.removeAt(index);
     });
     db.updateDatabase();
+    
+    // Show snackbar with undo option
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Task moved to trash'),
+        duration: const Duration(seconds: 3),
+        action: SnackBarAction(
+          label: 'Undo',
+          onPressed: () {
+            setState(() {
+              // Remove from trash and add back to todolist
+              var restoredTask = db.trash.removeLast();
+              restoredTask.remove('deletedAt');
+              db.toDoList.insert(index, restoredTask);
+            });
+            db.updateDatabase();
+          },
+        ),
+      ),
+    );
   }
 
   void changeTaskColor(int index, String newColor) {
@@ -726,11 +751,6 @@ class _HomePageState extends State<HomePage> {
       tasks = tasks.where((entry) => entry.value['completed'] == false).toList();
     }
 
-    // Apply color filter
-    if (_filterColor != null) {
-      tasks = tasks.where((entry) => entry.value['color'] == _filterColor).toList();
-    }
-
     // Apply sorting
     if (_sortBy == 'name') {
       tasks.sort((a, b) {
@@ -744,6 +764,27 @@ class _HomePageState extends State<HomePage> {
         bool completedB = b.value['completed'] ?? false;
         // Show incomplete tasks first
         return completedA == completedB ? 0 : (completedA ? 1 : -1);
+      });
+    } else if (_sortBy == 'createdDate') {
+      tasks.sort((a, b) {
+        DateTime? dateA = _parseDateTimeSafe(a.value['createdAt']);
+        DateTime? dateB = _parseDateTimeSafe(b.value['createdAt']);
+        if (dateA == null && dateB == null) return 0;
+        if (dateA == null) return 1;
+        if (dateB == null) return -1;
+        // Most recent first
+        return dateB.compareTo(dateA);
+      });
+    } else if (_sortBy == 'dueDate') {
+      tasks.sort((a, b) {
+        DateTime? dateA = _parseDateTimeSafe(a.value['dueDate']);
+        DateTime? dateB = _parseDateTimeSafe(b.value['dueDate']);
+        // Tasks with no due date go to the end
+        if (dateA == null && dateB == null) return 0;
+        if (dateA == null) return 1;
+        if (dateB == null) return -1;
+        // Earliest due date first
+        return dateA.compareTo(dateB);
       });
     }
 
@@ -805,38 +846,13 @@ class _HomePageState extends State<HomePage> {
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      'Color',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                    ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        ChoiceChip(
-                          label: const Text('All'),
-                          selected: _filterColor == null,
-                          onSelected: (selected) {
-                            updateBothStates(() => _filterColor = null);
-                          },
-                        ),
-                        ...getAvailableColorNames().map((color) => ChoiceChip(
-                              label: Text(color[0].toUpperCase() + color.substring(1)),
-                              selected: _filterColor == color,
-                              onSelected: (selected) {
-                                updateBothStates(() => _filterColor = color);
-                              },
-                            )),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
                       'Sort By',
                       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                     ),
                     const SizedBox(height: 8),
                     Wrap(
                       spacing: 8,
+                      runSpacing: 8,
                       children: [
                         ChoiceChip(
                           label: const Text('None'),
@@ -859,6 +875,20 @@ class _HomePageState extends State<HomePage> {
                             updateBothStates(() => _sortBy = 'completed');
                           },
                         ),
+                        ChoiceChip(
+                          label: const Text('Created Date'),
+                          selected: _sortBy == 'createdDate',
+                          onSelected: (selected) {
+                            updateBothStates(() => _sortBy = 'createdDate');
+                          },
+                        ),
+                        ChoiceChip(
+                          label: const Text('Due Date'),
+                          selected: _sortBy == 'dueDate',
+                          onSelected: (selected) {
+                            updateBothStates(() => _sortBy = 'dueDate');
+                          },
+                        ),
                       ],
                     ),
                   ],
@@ -870,7 +900,6 @@ class _HomePageState extends State<HomePage> {
                     // Reset filters
                     updateBothStates(() {
                       _filterStatus = 'all';
-                      _filterColor = null;
                       _sortBy = 'none';
                     });
                   },
@@ -1019,7 +1048,7 @@ class _HomePageState extends State<HomePage> {
             icon: Stack(
               children: [
                 const Icon(Icons.filter_list),
-                if (_filterStatus != 'all' || _filterColor != null || _sortBy != 'none')
+                if (_filterStatus != 'all' || _sortBy != 'none')
                   Positioned(
                     right: 0,
                     top: 0,
@@ -1043,6 +1072,15 @@ class _HomePageState extends State<HomePage> {
               onPressed: createNewGroup,
               tooltip: 'Add Group',
             ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => const SettingsPage()),
+              );
+            },
+            tooltip: 'Settings',
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: _logout,

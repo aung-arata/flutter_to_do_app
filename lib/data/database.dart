@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 class ToDoDatabase {
   List toDoList = [];
   List groups = [];
+  List trash = [];
 
   final _myBox = Hive.box('mybox');
 
@@ -33,6 +34,7 @@ class ToDoDatabase {
         "dueDate": null,
         "dueTime": null,
         "recurrence": null,
+        "createdAt": DateTime.now().toIso8601String(),
       },
       {
         "name": "Do Exercise",
@@ -43,6 +45,7 @@ class ToDoDatabase {
         "dueDate": null,
         "dueTime": null,
         "recurrence": null,
+        "createdAt": DateTime.now().toIso8601String(),
       },
     ];
   }
@@ -54,6 +57,14 @@ class ToDoDatabase {
       groups = List.from(loadedGroups);
     } else {
       groups = [];
+    }
+    
+    // Load trash
+    var loadedTrash = _myBox.get("TRASH");
+    if (loadedTrash != null) {
+      trash = List.from(loadedTrash);
+    } else {
+      trash = [];
     }
     
     // Load todos
@@ -75,6 +86,7 @@ class ToDoDatabase {
             "dueDate": null,
             "dueTime": null,
             "recurrence": null,
+            "createdAt": DateTime.now().toIso8601String(),
           };
         } else if (toDoList[i] is Map) {
           // Ensure all fields exist
@@ -93,6 +105,9 @@ class ToDoDatabase {
           }
           if (!item.containsKey("recurrence")) {
             item["recurrence"] = null;
+          }
+          if (!item.containsKey("createdAt")) {
+            item["createdAt"] = DateTime.now().toIso8601String();
           }
           
           // Migrate sub-notes to include color field
@@ -120,5 +135,6 @@ class ToDoDatabase {
   void updateDatabase() {
     _myBox.put("TODOLIST", toDoList);
     _myBox.put("GROUPS", groups);
+    _myBox.put("TRASH", trash);
   }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_app/pages/trash_page.dart';
+import 'package:local_auth/local_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -9,6 +11,86 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  final LocalAuthentication _localAuth = LocalAuthentication();
+  bool _biometricEnabled = false;
+  bool _canCheckBiometrics = false;
+  
+  @override
+  void initState() {
+    super.initState();
+    _checkBiometricAvailability();
+    _loadBiometricSetting();
+  }
+  
+  Future<void> _checkBiometricAvailability() async {
+    try {
+      final canCheck = await _localAuth.canCheckBiometrics;
+      final isDeviceSupported = await _localAuth.isDeviceSupported();
+      setState(() {
+        _canCheckBiometrics = canCheck && isDeviceSupported;
+      });
+    } catch (e) {
+      setState(() {
+        _canCheckBiometrics = false;
+      });
+    }
+  }
+  
+  Future<void> _loadBiometricSetting() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _biometricEnabled = prefs.getBool('biometric_enabled') ?? false;
+    });
+  }
+  
+  Future<void> _toggleBiometric(bool value) async {
+    if (!_canCheckBiometrics) {
+      _showMessage('Biometric authentication is not available on this device');
+      return;
+    }
+    
+    if (value) {
+      // User wants to enable biometric - authenticate first
+      try {
+        final authenticated = await _localAuth.authenticate(
+          localizedReason: 'Please authenticate to enable biometric lock',
+          options: const AuthenticationOptions(
+            stickyAuth: true,
+            biometricOnly: true,
+          ),
+        );
+        
+        if (authenticated) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('biometric_enabled', true);
+          setState(() {
+            _biometricEnabled = true;
+          });
+          _showMessage('Biometric authentication enabled');
+        }
+      } catch (e) {
+        _showMessage('Authentication failed: ${e.toString()}');
+      }
+    } else {
+      // User wants to disable biometric
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('biometric_enabled', false);
+      setState(() {
+        _biometricEnabled = false;
+      });
+      _showMessage('Biometric authentication disabled');
+    }
+  }
+  
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,25 +175,32 @@ class _SettingsPageState extends State<SettingsPage> {
             iconColor: Colors.red,
             children: [
               ListTile(
+                leading: Icon(
+                  Icons.fingerprint, 
+                  color: _canCheckBiometrics ? Colors.purple : Colors.grey,
+                ),
+                title: const Text('Biometric Authentication'),
+                subtitle: Text(
+                  _canCheckBiometrics 
+                      ? 'Use fingerprint or face to unlock' 
+                      : 'Not available on this device',
+                ),
+                trailing: Switch(
+                  value: _biometricEnabled,
+                  onChanged: _canCheckBiometrics ? _toggleBiometric : null,
+                ),
+              ),
+              const Divider(height: 1),
+              ListTile(
                 leading: const Icon(Icons.lock, color: Colors.blue),
                 title: const Text('App Lock'),
-                subtitle: const Text('Protect with pattern or fingerprint'),
+                subtitle: const Text('Protect with pattern lock'),
                 trailing: Switch(
                   value: false,
                   onChanged: (value) {
                     _showComingSoonDialog('App Lock');
                   },
                 ),
-              ),
-              const Divider(height: 1),
-              ListTile(
-                leading: const Icon(Icons.fingerprint, color: Colors.purple),
-                title: const Text('Fingerprint'),
-                subtitle: const Text('Use fingerprint to unlock'),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () {
-                  _showComingSoonDialog('Fingerprint Authentication');
-                },
               ),
               const Divider(height: 1),
               ListTile(

@@ -212,8 +212,11 @@ class _ToDoTileState extends State<ToDoTile> {
                 onTap: () {
                   Navigator.of(dialogContext).pop();
                   // Add a small delay to ensure the previous dialog is fully closed
+                  // Use mounted check to ensure widget is still in tree
                   Future.delayed(_dialogTransitionDelay, () {
-                    _showColorPicker(context);
+                    if (mounted) {
+                      _showColorPicker(context);
+                    }
                   });
                 },
               ),

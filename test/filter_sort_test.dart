@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:to_do_app/data/database.dart';
+import 'package:to_do_app/util/date_utils.dart' as date_utils;
 
 void main() {
   group('Filter Feature Tests', () {
@@ -192,6 +193,143 @@ void main() {
       expect(filtered[0]['completed'], false);
       expect(filtered[1]['completed'], true);
       expect(filtered[2]['completed'], true);
+    });
+  });
+
+  group('Date Sorting Tests', () {
+    test('sort by created date - most recent first', () {
+      final db = ToDoDatabase();
+      final now = DateTime.now();
+      db.toDoList = [
+        {
+          'name': 'Old Task',
+          'completed': false,
+          'color': 'yellow',
+          'groupIndex': 0,
+          'subNotes': [],
+          'createdAt': now.subtract(const Duration(days: 5)).toIso8601String(),
+        },
+        {
+          'name': 'Recent Task',
+          'completed': false,
+          'color': 'blue',
+          'groupIndex': 0,
+          'subNotes': [],
+          'createdAt': now.subtract(const Duration(days: 1)).toIso8601String(),
+        },
+        {
+          'name': 'Oldest Task',
+          'completed': false,
+          'color': 'red',
+          'groupIndex': 0,
+          'subNotes': [],
+          'createdAt': now.subtract(const Duration(days: 10)).toIso8601String(),
+        },
+      ];
+      
+      // Sort by created date (most recent first)
+      db.toDoList.sort((a, b) {
+        DateTime? dateA = date_utils.parseDateTimeSafe(a['createdAt']);
+        DateTime? dateB = date_utils.parseDateTimeSafe(b['createdAt']);
+        if (dateA == null && dateB == null) return 0;
+        if (dateA == null) return 1;
+        if (dateB == null) return -1;
+        return dateB.compareTo(dateA);
+      });
+      
+      expect(db.toDoList[0]['name'], 'Recent Task');
+      expect(db.toDoList[1]['name'], 'Old Task');
+      expect(db.toDoList[2]['name'], 'Oldest Task');
+    });
+
+    test('sort by due date - earliest first', () {
+      final db = ToDoDatabase();
+      final now = DateTime.now();
+      db.toDoList = [
+        {
+          'name': 'Task Due Next Week',
+          'completed': false,
+          'color': 'yellow',
+          'groupIndex': 0,
+          'subNotes': [],
+          'dueDate': now.add(const Duration(days: 7)).toIso8601String(),
+        },
+        {
+          'name': 'Task Due Tomorrow',
+          'completed': false,
+          'color': 'blue',
+          'groupIndex': 0,
+          'subNotes': [],
+          'dueDate': now.add(const Duration(days: 1)).toIso8601String(),
+        },
+        {
+          'name': 'Task Due in 3 Days',
+          'completed': false,
+          'color': 'red',
+          'groupIndex': 0,
+          'subNotes': [],
+          'dueDate': now.add(const Duration(days: 3)).toIso8601String(),
+        },
+      ];
+      
+      // Sort by due date (earliest first)
+      db.toDoList.sort((a, b) {
+        DateTime? dateA = date_utils.parseDateTimeSafe(a['dueDate']);
+        DateTime? dateB = date_utils.parseDateTimeSafe(b['dueDate']);
+        if (dateA == null && dateB == null) return 0;
+        if (dateA == null) return 1;
+        if (dateB == null) return -1;
+        return dateA.compareTo(dateB);
+      });
+      
+      expect(db.toDoList[0]['name'], 'Task Due Tomorrow');
+      expect(db.toDoList[1]['name'], 'Task Due in 3 Days');
+      expect(db.toDoList[2]['name'], 'Task Due Next Week');
+    });
+
+    test('sort by due date - tasks without due dates go last', () {
+      final db = ToDoDatabase();
+      final now = DateTime.now();
+      db.toDoList = [
+        {
+          'name': 'No Due Date',
+          'completed': false,
+          'color': 'yellow',
+          'groupIndex': 0,
+          'subNotes': [],
+          'dueDate': null,
+        },
+        {
+          'name': 'Task Due Tomorrow',
+          'completed': false,
+          'color': 'blue',
+          'groupIndex': 0,
+          'subNotes': [],
+          'dueDate': now.add(const Duration(days: 1)).toIso8601String(),
+        },
+        {
+          'name': 'Another No Due Date',
+          'completed': false,
+          'color': 'red',
+          'groupIndex': 0,
+          'subNotes': [],
+          'dueDate': null,
+        },
+      ];
+      
+      // Sort by due date (earliest first, nulls last)
+      db.toDoList.sort((a, b) {
+        DateTime? dateA = date_utils.parseDateTimeSafe(a['dueDate']);
+        DateTime? dateB = date_utils.parseDateTimeSafe(b['dueDate']);
+        if (dateA == null && dateB == null) return 0;
+        if (dateA == null) return 1;
+        if (dateB == null) return -1;
+        return dateA.compareTo(dateB);
+      });
+      
+      expect(db.toDoList[0]['name'], 'Task Due Tomorrow');
+      expect(db.toDoList[1]['dueDate'], null);
+      expect(db.toDoList[2]['dueDate'], null);
     });
   });
 }

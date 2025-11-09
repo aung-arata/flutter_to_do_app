@@ -33,6 +33,11 @@ A modern Flutter to-do list application with groups, sub-notes, and beautiful UI
 - Clean and intuitive interface
 - Empty state guidance
 
+### 🔒 Security
+- Biometric authentication (fingerprint/Face ID)
+- Optional app lock for privacy
+- User authentication system
+
 ### 💾 Data Persistence
 - Local storage using Hive
 - Automatic data migration
@@ -148,6 +153,46 @@ A modern Flutter to-do list application with groups, sub-notes, and beautiful UI
 4. Select sort option: None, Name (alphabetical), or Status (incomplete first)
 5. Active filters show a red indicator on the filter icon
 6. Tap "Reset" to clear all filters and sorting
+
+### Security Settings
+
+**Enable Biometric Authentication:**
+1. Go to Settings from the home page
+2. Navigate to the "Security" section
+3. Toggle on "Biometric Authentication"
+4. Authenticate with fingerprint or Face ID to confirm
+5. Once enabled, the app will require biometric authentication on startup
+
+**Disable Biometric Authentication:**
+1. Go to Settings
+2. Navigate to the "Security" section
+3. Toggle off "Biometric Authentication"
+4. The app will no longer require biometric authentication
+
+**Note:** Biometric authentication requires device support for fingerprint or Face ID. If your device doesn't support biometrics, the option will be disabled with a message "Not available on this device".
+
+### Trash Management
+
+**View Deleted Tasks:**
+1. Go to Settings
+2. Tap on "Trash"
+3. View all deleted tasks with deletion timestamps
+
+**Restore a Task:**
+1. In the Trash page, find the task you want to restore
+2. Tap the restore icon (↻) next to the task
+3. The task will be moved back to your active task list
+
+**Permanently Delete a Task:**
+1. In the Trash page, find the task you want to delete permanently
+2. Tap the delete forever icon (🗑️) next to the task
+3. Confirm the deletion
+4. The task will be permanently removed
+
+**Empty Trash:**
+1. In the Trash page, tap the "Empty Trash" icon in the app bar
+2. Confirm the action
+3. All tasks in trash will be permanently deleted
 
 ### Available Colors
 - Yellow

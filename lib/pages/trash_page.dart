@@ -23,7 +23,8 @@ class _TrashPageState extends State<TrashPage> {
 
   void _restoreTask(int index) {
     setState(() {
-      var task = db.trash[index];
+      // Create a copy of the task to avoid reference issues
+      var task = Map<String, dynamic>.from(db.trash[index]);
       task.remove('deletedAt');
       db.trash.removeAt(index);
       db.toDoList.add(task);

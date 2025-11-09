@@ -184,10 +184,12 @@ class _ToDoTileState extends State<ToDoTile> {
     );
   }
 
-  void _showTaskOptionsMenu(BuildContext context) {
+  void _showTaskOptionsMenu(BuildContext menuContext) {
+    // Capture the widget's context to use after dialog closes
+    final widgetContext = context;
     // Show a popup menu with task options
     showDialog(
-      context: context,
+      context: menuContext,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
           shape: RoundedRectangleBorder(
@@ -215,7 +217,7 @@ class _ToDoTileState extends State<ToDoTile> {
                   // Use mounted check to ensure widget is still in tree
                   Future.delayed(_dialogTransitionDelay, () {
                     if (mounted) {
-                      _showColorPicker(context);
+                      _showColorPicker(widgetContext);
                     }
                   });
                 },

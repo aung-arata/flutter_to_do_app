@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:to_do_app/util/my_button.dart';
 import 'package:to_do_app/util/color_utils.dart';
+import 'package:to_do_app/util/priority_utils.dart';
 
 class DialogBox extends StatefulWidget {
   final TextEditingController controller;
-  final Function(String, DateTime?, TimeOfDay?, String?) onSave;
+  final Function(String, DateTime?, TimeOfDay?, String?, String) onSave;
   final VoidCallback onCancel;
   final DateTime? initialDate;
   final TimeOfDay? initialTime;
   final String? initialRecurrence;
+  final String initialPriority;
 
   const DialogBox({
     super.key,
@@ -18,6 +20,7 @@ class DialogBox extends StatefulWidget {
     this.initialDate,
     this.initialTime,
     this.initialRecurrence,
+    this.initialPriority = "medium",
   });
 
   @override
@@ -29,6 +32,7 @@ class _DialogBoxState extends State<DialogBox> {
   DateTime? selectedDate;
   TimeOfDay? selectedTime;
   String? selectedRecurrence;
+  String selectedPriority = "medium";
 
   @override
   void initState() {
@@ -36,6 +40,7 @@ class _DialogBoxState extends State<DialogBox> {
     selectedDate = widget.initialDate;
     selectedTime = widget.initialTime;
     selectedRecurrence = widget.initialRecurrence;
+    selectedPriority = widget.initialPriority;
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -181,6 +186,42 @@ class _DialogBoxState extends State<DialogBox> {
             ),
             const SizedBox(height: 16),
             const Text(
+              "Priority:",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              children: availablePriorities.map((priorityData) {
+                final priorityName = priorityData['name'] as String;
+                final priorityLabel = priorityData['label'] as String;
+                final priorityIcon = priorityData['icon'] as IconData;
+                final priorityColor = priorityData['color'] as Color;
+                
+                return ChoiceChip(
+                  label: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(priorityIcon, size: 16, color: priorityColor),
+                      const SizedBox(width: 4),
+                      Text(priorityLabel),
+                    ],
+                  ),
+                  selected: selectedPriority == priorityName,
+                  onSelected: (selected) {
+                    setState(() {
+                      selectedPriority = priorityName;
+                    });
+                  },
+                  selectedColor: priorityColor.withOpacity(0.3),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 16),
+            const Text(
               "Recurrence:",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
@@ -235,7 +276,7 @@ class _DialogBoxState extends State<DialogBox> {
       actions: [
         MyButton(
           text: "Save",
-          onPressed: () => widget.onSave(selectedColor, selectedDate, selectedTime, selectedRecurrence),
+          onPressed: () => widget.onSave(selectedColor, selectedDate, selectedTime, selectedRecurrence, selectedPriority),
         ),
         MyButton(text: "Cancel", onPressed: widget.onCancel),
       ],

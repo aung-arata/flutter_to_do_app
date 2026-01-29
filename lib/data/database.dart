@@ -35,6 +35,7 @@ class ToDoDatabase {
         "dueTime": null,
         "recurrence": null,
         "createdAt": DateTime.now().toIso8601String(),
+        "priority": "medium",
       },
       {
         "name": "Do Exercise",
@@ -46,6 +47,7 @@ class ToDoDatabase {
         "dueTime": null,
         "recurrence": null,
         "createdAt": DateTime.now().toIso8601String(),
+        "priority": "medium",
       },
     ];
   }
@@ -87,6 +89,7 @@ class ToDoDatabase {
             "dueTime": null,
             "recurrence": null,
             "createdAt": DateTime.now().toIso8601String(),
+            "priority": "medium",
           };
         } else if (toDoList[i] is Map) {
           // Ensure all fields exist
@@ -108,6 +111,9 @@ class ToDoDatabase {
           }
           if (!item.containsKey("createdAt")) {
             item["createdAt"] = DateTime.now().toIso8601String();
+          }
+          if (!item.containsKey("priority")) {
+            item["priority"] = "medium";
           }
           
           // Migrate sub-notes to include color field

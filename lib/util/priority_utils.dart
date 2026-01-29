@@ -24,14 +24,10 @@ const List<Map<String, dynamic>> availablePriorities = [
 
 // Get priority details from priority name
 Map<String, dynamic>? getPriorityDetails(String priorityName) {
-  try {
-    return availablePriorities.firstWhere(
-      (p) => p['name'] == priorityName.toLowerCase(),
-      orElse: () => availablePriorities[1], // Default to medium
-    );
-  } catch (e) {
-    return availablePriorities[1]; // Default to medium
-  }
+  return availablePriorities.firstWhere(
+    (p) => p['name'] == priorityName.toLowerCase(),
+    orElse: () => availablePriorities[1], // Default to medium
+  );
 }
 
 // Get priority color from priority name

@@ -14,6 +14,7 @@ A modern Flutter to-do list application with groups, sub-notes, and beautiful UI
 - Create and manage to-do tasks
 - Mark tasks as complete/incomplete
 - Delete tasks with swipe gesture
+- **Priority Levels** - Assign High, Medium, or Low priority to tasks with color-coded badges
 - **Date & Time** - Set due dates and times for tasks (similar to Google Tasks)
 - **Overdue indicators** - Visual highlighting for overdue tasks
 - **Recurrence** - Set tasks to repeat daily, weekly, or monthly (automatically creates new task when completed)
@@ -24,7 +25,7 @@ A modern Flutter to-do list application with groups, sub-notes, and beautiful UI
 - **Move sub-notes between tasks** - Transfer sub-notes from one task to another
 - **Customize sub-note colors** - Each sub-note can have its own color
 - **Drag and drop** - Reorder tasks when no groups exist
-- **Filter & Sort** - Filter by status or color, sort by name or completion status
+- **Filter & Sort** - Filter by status or color, sort by name, completion status, priority, or due date
 
 ### 🎨 Modern UI
 - Material Design 3 principles
@@ -73,10 +74,11 @@ A modern Flutter to-do list application with groups, sub-notes, and beautiful UI
 2. Select which group to add the task to (if multiple groups exist)
 3. Enter your task name
 4. Select a color from the color picker
-5. (Optional) Set a due date by tapping "Select Date"
-6. (Optional) If date is set, you can also set a time by tapping "Select Time"
-7. (Optional) Set a recurrence pattern: None, Daily, Weekly, or Monthly
-8. Tap "Save"
+5. (Optional) Select a priority level: High (red), Medium (orange), or Low (green)
+6. (Optional) Set a due date by tapping "Select Date"
+7. (Optional) If date is set, you can also set a time by tapping "Select Time"
+8. (Optional) Set a recurrence pattern: None, Daily, Weekly, or Monthly
+9. Tap "Save"
 
 **Add Sub-notes:**
 1. Click the + button on any task
@@ -97,6 +99,7 @@ A modern Flutter to-do list application with groups, sub-notes, and beautiful UI
 2. Tap the "Options" button (⋮) to see:
    - Edit Date & Time
    - Change Color
+   - Change Priority
    - Move to Group (if multiple groups exist)
 3. Or tap the "Delete" button to remove the task
 
@@ -150,7 +153,7 @@ A modern Flutter to-do list application with groups, sub-notes, and beautiful UI
 1. Tap the filter icon in the app bar (top right)
 2. Select status filter: All, Completed, or Incomplete
 3. Select color filter: All or specific color
-4. Select sort option: None, Name (alphabetical), or Status (incomplete first)
+4. Select sort option: None, Name (alphabetical), Status (incomplete first), Priority (high to low), or Due Date
 5. Active filters show a red indicator on the filter icon
 6. Tap "Reset" to clear all filters and sorting
 
@@ -206,6 +209,11 @@ A modern Flutter to-do list application with groups, sub-notes, and beautiful UI
 - Cyan
 - Amber
 
+### Available Priority Levels
+- **High** (🔴) - Urgent and important tasks that need immediate attention
+- **Medium** (🟠) - Regular tasks with moderate importance
+- **Low** (🟢) - Tasks that can be done when time permits
+
 ### Available Group Icons
 - Person (👤) - Personal tasks
 - Work (💼) - Professional tasks
@@ -221,11 +229,10 @@ A modern Flutter to-do list application with groups, sub-notes, and beautiful UI
 This section outlines potential features to transform this into a comprehensive, enterprise-grade to-do application:
 
 ### 🎯 Priority & Organization
-**Priority Levels**
-- Add High/Medium/Low priority indicators to tasks
-- Visual priority badges with color coding (red for high, yellow for medium, green for low)
-- Sort and filter tasks by priority level
+**Enhanced Priority Features**
 - Priority-based task recommendations ("Focus on high-priority tasks first")
+- Auto-priority suggestions based on due dates and keywords
+- Priority statistics and analytics
 
 **Advanced Tagging System**
 - Add custom tags beyond groups (e.g., #urgent, #waiting, #home, #office)
@@ -470,11 +477,11 @@ This section outlines potential features to transform this into a comprehensive,
 Based on user value and development effort, here's a suggested implementation order:
 
 **Phase 1: Enhanced Core Features (3-4 months)**
-1. Priority levels (High/Medium/Low)
-2. Advanced search functionality
-3. Push notifications and smart reminders
-4. Multi-level subtasks
-5. Enhanced notes with rich text
+1. Advanced search functionality
+2. Push notifications and smart reminders
+3. Multi-level subtasks
+4. Enhanced notes with rich text
+5. Advanced tagging system
 
 **Phase 2: Productivity & Analytics (2-3 months)**
 6. Analytics dashboard

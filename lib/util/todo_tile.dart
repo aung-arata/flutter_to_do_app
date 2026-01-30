@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:to_do_app/util/color_utils.dart';
+import 'package:to_do_app/util/priority_utils.dart';
 
 class ToDoTile extends StatefulWidget {
   final String taskName;
@@ -21,6 +22,8 @@ class ToDoTile extends StatefulWidget {
   final TimeOfDay? dueTime;
   final Function()? onEditDateTime;
   final String? recurrence;
+  final String priority;
+  final Function(String)? onPriorityChanged;
 
   const ToDoTile({
     super.key,
@@ -42,6 +45,8 @@ class ToDoTile extends StatefulWidget {
     this.dueTime,
     this.onEditDateTime,
     this.recurrence,
+    this.priority = "medium",
+    this.onPriorityChanged,
   });
 
   @override
@@ -222,6 +227,19 @@ class _ToDoTileState extends State<ToDoTile> {
                   });
                 },
               ),
+              if (widget.onPriorityChanged != null)
+                ListTile(
+                  leading: Icon(Icons.flag, color: Colors.red.shade600),
+                  title: const Text('Change Priority'),
+                  onTap: () {
+                    Navigator.of(dialogContext).pop();
+                    Future.delayed(_dialogTransitionDelay, () {
+                      if (mounted) {
+                        _showPriorityPicker(widgetContext);
+                      }
+                    });
+                  },
+                ),
               if (widget.onMoveTask != null)
                 ListTile(
                   leading: Icon(Icons.drive_file_move, color: Colors.orange.shade600),
@@ -281,6 +299,49 @@ class _ToDoTileState extends State<ToDoTile> {
                       colorData['color'] as Color,
                     ))
                 .toList(),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showPriorityPicker(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text('Choose Priority'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: availablePriorities.map((priorityData) {
+              final priorityName = priorityData['name'] as String;
+              final priorityLabel = priorityData['label'] as String;
+              final priorityIcon = priorityData['icon'] as IconData;
+              final priorityColor = priorityData['color'] as Color;
+              final isSelected = widget.priority == priorityName;
+              
+              return ListTile(
+                leading: Icon(priorityIcon, color: priorityColor),
+                title: Text(
+                  priorityLabel,
+                  style: TextStyle(
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
+                trailing: isSelected 
+                  ? Icon(Icons.check, color: priorityColor)
+                  : null,
+                onTap: () {
+                  if (widget.onPriorityChanged != null) {
+                    widget.onPriorityChanged!(priorityName);
+                  }
+                  Navigator.of(dialogContext).pop();
+                },
+              );
+            }).toList(),
           ),
         );
       },
@@ -357,16 +418,53 @@ class _ToDoTileState extends State<ToDoTile> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                widget.taskName,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                  decoration: widget.taskCompleted
-                                      ? TextDecoration.lineThrough
-                                      : TextDecoration.none,
-                                  color: Colors.black87,
-                                ),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      widget.taskName,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                        decoration: widget.taskCompleted
+                                            ? TextDecoration.lineThrough
+                                            : TextDecoration.none,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: getPriorityColor(widget.priority).withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: getPriorityColor(widget.priority),
+                                        width: 1.5,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          getPriorityIcon(widget.priority),
+                                          size: 14,
+                                          color: getPriorityColor(widget.priority),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          getPriorityLabel(widget.priority),
+                                          style: TextStyle(
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.bold,
+                                            color: getPriorityColor(widget.priority),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
                               ),
                               if (widget.dueDate != null) ...[
                                 const SizedBox(height: 4),

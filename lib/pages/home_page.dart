@@ -9,6 +9,7 @@ import 'package:to_do_app/util/todo_tile.dart';
 import 'package:to_do_app/util/group_tile.dart';
 import 'package:to_do_app/util/group_dialog.dart';
 import 'package:to_do_app/util/date_utils.dart' as date_utils;
+import 'package:to_do_app/util/priority_utils.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -25,7 +26,7 @@ class _HomePageState extends State<HomePage> {
   
   // Filter and sort state
   String _filterStatus = 'all'; // 'all', 'completed', 'incomplete'
-  String _sortBy = 'none'; // 'none', 'name', 'completed', 'createdDate', 'dueDate'
+  String _sortBy = 'none'; // 'none', 'name', 'completed', 'createdDate', 'dueDate', 'priority'
 
   @override
   void initState() {
@@ -91,6 +92,7 @@ class _HomePageState extends State<HomePage> {
             'dueTime': task['dueTime'],
             'recurrence': recurrence,
             'createdAt': DateTime.now().toIso8601String(),
+            'priority': task['priority'] ?? 'medium',
           });
         }
       }
@@ -98,7 +100,7 @@ class _HomePageState extends State<HomePage> {
     db.updateDatabase();
   }
 
-  void saveNewTask(String color, DateTime? dueDate, TimeOfDay? dueTime, String? recurrence) {
+  void saveNewTask(String color, DateTime? dueDate, TimeOfDay? dueTime, String? recurrence, String priority) {
     if (_controller.text.trim().isEmpty) {
       return;
     }
@@ -113,6 +115,7 @@ class _HomePageState extends State<HomePage> {
         'dueTime': dueTime != null ? _formatTimeOfDay(dueTime) : null,
         'recurrence': recurrence,
         'createdAt': DateTime.now().toIso8601String(),
+        'priority': priority,
       });
       _controller.clear();
     });
@@ -231,6 +234,13 @@ class _HomePageState extends State<HomePage> {
     db.updateDatabase();
   }
 
+  void changeTaskPriority(int index, String newPriority) {
+    setState(() {
+      db.toDoList[index]['priority'] = newPriority;
+    });
+    db.updateDatabase();
+  }
+
   void addSubNote(int taskIndex, String subNoteName) {
     setState(() {
       if (db.toDoList[taskIndex]['subNotes'] == null) {
@@ -283,7 +293,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   String _formatTimeOfDay(TimeOfDay time) {
-    return '${time.hour}:${time.minute.toString().padLeft(2, '0')}';
+    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
   }
 
 
@@ -798,6 +808,15 @@ class _HomePageState extends State<HomePage> {
         // Earliest due date first
         return dateA.compareTo(dateB);
       });
+    } else if (_sortBy == 'priority') {
+      tasks.sort((a, b) {
+        String priorityA = a.value['priority'] ?? 'medium';
+        String priorityB = b.value['priority'] ?? 'medium';
+        // Get sort order: high=0, medium=1, low=2
+        int orderA = getPrioritySortOrder(priorityA);
+        int orderB = getPrioritySortOrder(priorityB);
+        return orderA.compareTo(orderB);
+      });
     }
 
     return tasks;
@@ -901,6 +920,13 @@ class _HomePageState extends State<HomePage> {
                             updateBothStates(() => _sortBy = 'dueDate');
                           },
                         ),
+                        ChoiceChip(
+                          label: const Text('Priority'),
+                          selected: _sortBy == 'priority',
+                          onSelected: (selected) {
+                            updateBothStates(() => _sortBy = 'priority');
+                          },
+                        ),
                       ],
                     ),
                   ],
@@ -964,9 +990,11 @@ class _HomePageState extends State<HomePage> {
                 dueDate: date_utils.parseDateTimeSafe(task['dueDate']),
                 dueTime: _parseTimeOfDay(task['dueTime']),
                 recurrence: task['recurrence'],
+                priority: task['priority'] ?? 'medium',
                 onChanged: (value) => checkBoxChanged(value, i),
                 deleteFunction: (context) => deleteTask(i),
                 onColorChanged: (color) => changeTaskColor(i, color),
+                onPriorityChanged: (priority) => changeTaskPriority(i, priority),
                 onAddSubNote: (subNote) => addSubNote(i, subNote),
                 onSubNoteChanged: (subIdx, completed) => toggleSubNote(i, subIdx, completed),
                 onDeleteSubNote: (subIdx) => deleteSubNote(i, subIdx),
@@ -1019,9 +1047,11 @@ class _HomePageState extends State<HomePage> {
                     dueDate: date_utils.parseDateTimeSafe(task['dueDate']),
                     dueTime: _parseTimeOfDay(task['dueTime']),
                     recurrence: task['recurrence'],
+                    priority: task['priority'] ?? 'medium',
                     onChanged: (value) => checkBoxChanged(value, i),
                     deleteFunction: (context) => deleteTask(i),
                     onColorChanged: (color) => changeTaskColor(i, color),
+                    onPriorityChanged: (priority) => changeTaskPriority(i, priority),
                     onAddSubNote: (subNote) => addSubNote(i, subNote),
                     onSubNoteChanged: (subIdx, completed) => toggleSubNote(i, subIdx, completed),
                     onDeleteSubNote: (subIdx) => deleteSubNote(i, subIdx),

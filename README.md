@@ -14,6 +14,7 @@ A modern Flutter to-do list application with groups, sub-notes, and beautiful UI
 - Create and manage to-do tasks
 - Mark tasks as complete/incomplete
 - Delete tasks with swipe gesture
+- **Priority Levels** - Assign High, Medium, or Low priority to tasks with color-coded badges
 - **Date & Time** - Set due dates and times for tasks (similar to Google Tasks)
 - **Overdue indicators** - Visual highlighting for overdue tasks
 - **Recurrence** - Set tasks to repeat daily, weekly, or monthly (automatically creates new task when completed)
@@ -24,7 +25,7 @@ A modern Flutter to-do list application with groups, sub-notes, and beautiful UI
 - **Move sub-notes between tasks** - Transfer sub-notes from one task to another
 - **Customize sub-note colors** - Each sub-note can have its own color
 - **Drag and drop** - Reorder tasks when no groups exist
-- **Filter & Sort** - Filter by status or color, sort by name or completion status
+- **Filter & Sort** - Filter by status or color, sort by name, completion status, priority, or due date
 
 ### 🎨 Modern UI
 - Material Design 3 principles
@@ -73,10 +74,11 @@ A modern Flutter to-do list application with groups, sub-notes, and beautiful UI
 2. Select which group to add the task to (if multiple groups exist)
 3. Enter your task name
 4. Select a color from the color picker
-5. (Optional) Set a due date by tapping "Select Date"
-6. (Optional) If date is set, you can also set a time by tapping "Select Time"
-7. (Optional) Set a recurrence pattern: None, Daily, Weekly, or Monthly
-8. Tap "Save"
+5. (Optional) Select a priority level: High (red), Medium (orange), or Low (green)
+6. (Optional) Set a due date by tapping "Select Date"
+7. (Optional) If date is set, you can also set a time by tapping "Select Time"
+8. (Optional) Set a recurrence pattern: None, Daily, Weekly, or Monthly
+9. Tap "Save"
 
 **Add Sub-notes:**
 1. Click the + button on any task
@@ -97,6 +99,7 @@ A modern Flutter to-do list application with groups, sub-notes, and beautiful UI
 2. Tap the "Options" button (⋮) to see:
    - Edit Date & Time
    - Change Color
+   - Change Priority
    - Move to Group (if multiple groups exist)
 3. Or tap the "Delete" button to remove the task
 
@@ -150,7 +153,7 @@ A modern Flutter to-do list application with groups, sub-notes, and beautiful UI
 1. Tap the filter icon in the app bar (top right)
 2. Select status filter: All, Completed, or Incomplete
 3. Select color filter: All or specific color
-4. Select sort option: None, Name (alphabetical), or Status (incomplete first)
+4. Select sort option: None, Name (alphabetical), Status (incomplete first), Priority (high to low), or Due Date
 5. Active filters show a red indicator on the filter icon
 6. Tap "Reset" to clear all filters and sorting
 
@@ -206,6 +209,11 @@ A modern Flutter to-do list application with groups, sub-notes, and beautiful UI
 - Cyan
 - Amber
 
+### Available Priority Levels
+- **High** (🔴) - Urgent and important tasks that need immediate attention
+- **Medium** (🟠) - Regular tasks with moderate importance
+- **Low** (🟢) - Tasks that can be done when time permits
+
 ### Available Group Icons
 - Person (👤) - Personal tasks
 - Work (💼) - Professional tasks
@@ -215,6 +223,301 @@ A modern Flutter to-do list application with groups, sub-notes, and beautiful UI
 - Book (📚) - Learning and reading
 - Star (⭐) - Important items
 - Favorite (❤️) - Priority tasks
+
+## Roadmap: Future Feature Enhancements 🚀
+
+This section outlines potential features to transform this into a comprehensive, enterprise-grade to-do application:
+
+### 🎯 Priority & Organization
+**Enhanced Priority Features**
+- Priority-based task recommendations ("Focus on high-priority tasks first")
+- Auto-priority suggestions based on due dates and keywords
+- Priority statistics and analytics
+
+**Advanced Tagging System**
+- Add custom tags beyond groups (e.g., #urgent, #waiting, #home, #office)
+- Multiple tags per task for flexible categorization
+- Tag-based filtering and searching
+- Tag statistics and analytics
+- Suggested tags based on task names using simple keyword matching
+
+**Smart Categories**
+- Auto-categorization based on keywords (e.g., "buy" → Shopping)
+- Frequently used categories quick-access
+- Category templates with predefined task lists
+
+### 📝 Enhanced Task Management
+**Rich Task Details**
+- Extended notes with Markdown support
+- File attachments (images, PDFs, documents)
+- URL/link attachments with preview
+- Voice notes recording and playback
+- Task dependencies (task A must be completed before task B)
+- Estimated time vs actual time tracking
+
+**Advanced Subtasks**
+- Multi-level nested subtasks (unlimited depth)
+- Subtask progress tracking with percentage completion
+- Independent subtask deadlines
+- Subtask templates for recurring task structures
+
+**Task Templates**
+- Create reusable task templates for common workflows
+- Quick task creation from templates
+- Template library with common task types
+- Share templates with other users
+
+### ⏰ Smart Scheduling & Reminders
+**Intelligent Notifications**
+- Push notifications for due dates and times
+- Smart reminders based on location (e.g., remind when near grocery store)
+- Customizable reminder intervals (15 min, 1 hour, 1 day before)
+- Snooze functionality for reminders
+- Recurring reminder patterns
+
+**Time Management**
+- Time blocking and calendar integration
+- Pomodoro timer integration for task focus sessions
+- Daily/weekly time budgets per category
+- Time spent analytics and reports
+- Focus mode to hide distractions
+
+**Smart Scheduling**
+- AI-powered task time suggestions based on completion history
+- Optimal task ordering based on deadlines and priorities
+- Calendar view with drag-and-drop rescheduling
+- Time conflict detection
+
+### 🔍 Search & Discovery
+**Advanced Search**
+- Full-text search across all tasks, notes, and subtasks
+- Search by date range, color, group, priority
+- Search filters and saved search queries
+- Search history and suggestions
+- Voice search capability
+
+**Quick Actions**
+- Keyboard shortcuts for power users
+- Gesture-based quick actions
+- Customizable action buttons
+- Batch operations (select multiple tasks)
+
+### 📊 Analytics & Insights
+**Productivity Dashboard**
+- Task completion rates over time (daily, weekly, monthly)
+- Category-wise time distribution charts
+- Productivity trends and patterns
+- Streak tracking for daily task completion
+- Task completion forecasting
+
+**Reports & Statistics**
+- Overdue tasks report
+- Most productive days/times analysis
+- Task completion velocity
+- Export reports as PDF/CSV
+- Visual charts and graphs (pie, bar, line charts)
+
+**Habit Tracking**
+- Track daily habits and routines
+- Habit streaks and consistency scoring
+- Habit reminders
+- Habit progress visualization
+
+### 🌐 Collaboration & Sharing
+**Team Features**
+- Share tasks and groups with other users
+- Assign tasks to team members
+- Collaborative task lists
+- Real-time updates and synchronization
+- Comments and discussions on tasks
+- Activity feed showing team actions
+
+**Social Features**
+- Share completed tasks to social media
+- Task achievement badges and milestones
+- Public task templates gallery
+- Community-contributed templates
+
+### ☁️ Cloud & Sync
+**Cross-Device Synchronization**
+- Real-time cloud sync via Firebase or similar
+- Conflict resolution for offline changes
+- Sync status indicators
+- Selective sync (choose what to sync)
+- Backup and restore functionality
+
+**Multi-Platform Support**
+- Web app version
+- Desktop apps (Windows, macOS, Linux)
+- Browser extensions
+- Smartwatch companion apps
+
+### 🎨 Customization & Themes
+**Visual Customization**
+- Full dark mode support
+- Multiple theme presets (Light, Dark, AMOLED Black, Solarized)
+- Custom theme creation with color picker
+- Per-group color schemes
+- Custom fonts and text sizes
+- Animated backgrounds and effects
+
+**Layout Options**
+- List view, grid view, board view (Kanban)
+- Compact and comfortable display densities
+- Customizable card layouts
+- Dashboard widgets customization
+
+### 🔐 Advanced Security
+**Enhanced Privacy**
+- Pattern lock (already mentioned as "Coming Soon")
+- PIN code protection
+- App-specific passwords
+- Task encryption for sensitive data
+- Private tasks (hidden from quick view)
+- Auto-lock after inactivity
+
+**Data Control**
+- Export all data (JSON, CSV, PDF)
+- Import from other to-do apps
+- Selective data deletion
+- GDPR compliance tools
+
+### 🛠️ Integrations
+**Calendar Integration**
+- Google Calendar sync
+- Apple Calendar sync
+- Outlook Calendar sync
+- Two-way synchronization
+
+**Third-Party Integrations**
+- Email integration (create tasks from emails)
+- Slack/Teams integration
+- Google Drive/Dropbox for attachments
+- IFTTT/Zapier automation
+- Voice assistants (Google Assistant, Siri, Alexa)
+
+**API & Automation**
+- RESTful API for custom integrations
+- Webhooks for task events
+- Automation rules (if-this-then-that)
+
+### 📱 Mobile Enhancements
+**Home Screen Widgets**
+- Today's tasks widget
+- Upcoming tasks widget
+- Quick add task widget
+- Task counter widget
+- Progress tracker widget
+
+**Platform Features**
+- Share extension (add tasks from other apps)
+- Siri Shortcuts support
+- 3D Touch quick actions
+- Notification actions (complete/snooze without opening app)
+
+### ♿ Accessibility
+**Enhanced Accessibility**
+- Screen reader optimization
+- Voice commands for all actions
+- High contrast themes
+- Adjustable font sizes
+- Keyboard navigation support
+- Reduced motion options
+
+### 🌍 Localization
+**Multi-Language Support**
+- Support for 20+ languages
+- RTL (Right-to-Left) language support
+- Regional date/time formats
+- Currency support for shopping tasks
+
+### 💡 Smart Features
+**AI-Powered Assistance**
+- Smart task suggestions based on patterns
+- Auto-complete task names
+- Duplicate task detection
+- Natural language task input ("Remind me to buy milk tomorrow at 5 PM")
+- Task priority suggestions based on deadlines
+
+**Gamification**
+- Achievement system with unlockable badges
+- Points and levels for task completion
+- Daily/weekly challenges
+- Leaderboards (for team mode)
+- Reward animations
+
+### 📈 Business/Professional Features
+**Project Management**
+- Gantt chart view for task timelines
+- Milestone tracking
+- Resource allocation
+- Budget tracking for tasks/projects
+- Client/customer association
+
+**Meeting Integration**
+- Convert meeting notes to tasks
+- Pre-meeting task reminders
+- Post-meeting action items tracking
+
+### 🔄 Advanced Workflows
+**Automation**
+- Automatic task creation rules
+- Scheduled task generation
+- Workflow templates
+- Custom automation scripts
+
+**Task Relationships**
+- Parent-child task hierarchies
+- Task linking and references
+- Blocking task dependencies
+- Related tasks suggestions
+
+## Implementation Priority
+
+Based on user value and development effort, here's a suggested implementation order:
+
+**Phase 1: Enhanced Core Features (3-4 months)**
+1. Advanced search functionality
+2. Push notifications and smart reminders
+3. Multi-level subtasks
+4. Enhanced notes with rich text
+5. Advanced tagging system
+
+**Phase 2: Productivity & Analytics (2-3 months)**
+6. Analytics dashboard
+7. Time tracking
+8. Habit tracking
+9. Task templates
+10. Dark mode
+
+**Phase 3: Collaboration & Cloud (4-5 months)**
+11. Cloud synchronization
+12. Sharing and collaboration
+13. Multi-platform support
+14. Calendar integration
+
+**Phase 4: Advanced Features (3-4 months)**
+15. AI-powered suggestions
+16. Advanced integrations
+17. Gamification
+18. API access
+
+**Phase 5: Polish & Scale (2-3 months)**
+19. Localization
+20. Accessibility improvements
+21. Performance optimization
+22. Enterprise features
+
+## Technical Debt & Improvements
+
+While adding features, consider addressing these technical improvements:
+- Migrate from Hive to a more robust database (SQLite/Drift) for better query capabilities
+- Implement proper state management (Provider, Riverpod, or Bloc)
+- Add comprehensive unit and integration tests
+- Implement proper error handling and logging
+- Create a proper data model layer with type safety
+- Add CI/CD pipeline for automated testing and deployment
+- Implement analytics tracking for feature usage
 
 ## Getting Started
 

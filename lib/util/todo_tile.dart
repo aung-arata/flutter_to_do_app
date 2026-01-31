@@ -6,6 +6,9 @@ import 'package:to_do_app/util/tag_utils.dart';
 import 'package:to_do_app/util/category_utils.dart';
 
 class ToDoTile extends StatefulWidget {
+  // Maximum number of tags to display on the task tile
+  static const int maxDisplayedTags = 3;
+  
   final String taskName;
   final bool taskCompleted;
   final Function(bool?)? onChanged;
@@ -481,7 +484,7 @@ class _ToDoTileState extends State<ToDoTile> {
                                 Wrap(
                                   spacing: 4,
                                   runSpacing: 4,
-                                  children: widget.tags!.take(3).map((tag) {
+                                  children: widget.tags!.take(ToDoTile.maxDisplayedTags).map((tag) {
                                     return Container(
                                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                       decoration: BoxDecoration(

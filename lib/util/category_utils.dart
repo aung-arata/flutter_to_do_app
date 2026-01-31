@@ -70,16 +70,19 @@ String? suggestCategory(String taskName) {
 
 // Get category details
 Map<String, dynamic>? getCategoryDetails(String categoryName) {
-  return predefinedCategories.firstWhere(
-    (cat) => cat['name'].toString().toLowerCase() == categoryName.toLowerCase(),
-    orElse: () => <String, dynamic>{},
-  );
+  try {
+    return predefinedCategories.firstWhere(
+      (cat) => cat['name'].toString().toLowerCase() == categoryName.toLowerCase(),
+    );
+  } catch (e) {
+    return null;
+  }
 }
 
 // Get category color
 Color getCategoryColor(String categoryName) {
   final details = getCategoryDetails(categoryName);
-  if (details != null && details.isNotEmpty) {
+  if (details != null) {
     return details['color'] as Color;
   }
   return Colors.grey;
@@ -88,7 +91,7 @@ Color getCategoryColor(String categoryName) {
 // Get category icon
 IconData getCategoryIcon(String categoryName) {
   final details = getCategoryDetails(categoryName);
-  if (details != null && details.isNotEmpty) {
+  if (details != null) {
     return details['icon'] as IconData;
   }
   return Icons.category;

@@ -2,15 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:to_do_app/util/my_button.dart';
 import 'package:to_do_app/util/color_utils.dart';
 import 'package:to_do_app/util/priority_utils.dart';
+import 'package:to_do_app/util/tag_utils.dart';
+import 'package:to_do_app/util/category_utils.dart';
 
 class DialogBox extends StatefulWidget {
   final TextEditingController controller;
-  final Function(String, DateTime?, TimeOfDay?, String?, String) onSave;
+  final Function(String, DateTime?, TimeOfDay?, String?, String, List<String>, String?) onSave;
   final VoidCallback onCancel;
   final DateTime? initialDate;
   final TimeOfDay? initialTime;
   final String? initialRecurrence;
   final String initialPriority;
+  final List<String>? initialTags;
+  final String? initialCategory;
 
   const DialogBox({
     super.key,
@@ -21,6 +25,8 @@ class DialogBox extends StatefulWidget {
     this.initialTime,
     this.initialRecurrence,
     this.initialPriority = "medium",
+    this.initialTags,
+    this.initialCategory,
   });
 
   @override
@@ -33,6 +39,9 @@ class _DialogBoxState extends State<DialogBox> {
   TimeOfDay? selectedTime;
   String? selectedRecurrence;
   String selectedPriority = "medium";
+  List<String> selectedTags = [];
+  String? selectedCategory;
+  final TextEditingController _customTagController = TextEditingController();
 
   @override
   void initState() {
@@ -41,6 +50,14 @@ class _DialogBoxState extends State<DialogBox> {
     selectedTime = widget.initialTime;
     selectedRecurrence = widget.initialRecurrence;
     selectedPriority = widget.initialPriority;
+    selectedTags = widget.initialTags != null ? List<String>.from(widget.initialTags!) : [];
+    selectedCategory = widget.initialCategory;
+  }
+
+  @override
+  void dispose() {
+    _customTagController.dispose();
+    super.dispose();
   }
 
   Future<void> _selectDate(BuildContext context) async {
@@ -270,13 +287,141 @@ class _DialogBoxState extends State<DialogBox> {
                 ),
               ],
             ),
+            const SizedBox(height: 16),
+            const Text(
+              "Tags:",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 8),
+            if (selectedTags.isNotEmpty)
+              Wrap(
+                spacing: 8,
+                runSpacing: 4,
+                children: selectedTags.map((tag) {
+                  return Chip(
+                    label: Text(tag),
+                    backgroundColor: getTagColor(tag),
+                    deleteIcon: const Icon(Icons.close, size: 18),
+                    onDeleted: () {
+                      setState(() {
+                        selectedTags.remove(tag);
+                      });
+                    },
+                  );
+                }).toList(),
+              ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                ...commonTags.where((tag) => !selectedTags.contains(tag)).map((tag) {
+                  return ActionChip(
+                    label: Text(tag),
+                    backgroundColor: getTagColor(tag),
+                    onPressed: () {
+                      setState(() {
+                        if (!selectedTags.contains(tag)) {
+                          selectedTags.add(tag);
+                        }
+                      });
+                    },
+                  );
+                }).toList(),
+                ActionChip(
+                  label: const Text('+ Custom'),
+                  icon: const Icon(Icons.add, size: 16),
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Add Custom Tag'),
+                        content: TextField(
+                          controller: _customTagController,
+                          decoration: const InputDecoration(
+                            hintText: 'Enter tag name',
+                          ),
+                          autofocus: true,
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              final customTag = _customTagController.text.trim();
+                              if (customTag.isNotEmpty && !selectedTags.contains(customTag)) {
+                                setState(() {
+                                  selectedTags.add(customTag);
+                                });
+                              }
+                              _customTagController.clear();
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Add'),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              "Category:",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                ChoiceChip(
+                  label: const Text('None'),
+                  selected: selectedCategory == null,
+                  onSelected: (selected) {
+                    setState(() {
+                      selectedCategory = null;
+                    });
+                  },
+                ),
+                ...predefinedCategories.map((categoryData) {
+                  final categoryName = categoryData['name'] as String;
+                  final categoryIcon = categoryData['icon'] as IconData;
+                  return ChoiceChip(
+                    label: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(categoryIcon, size: 16),
+                        const SizedBox(width: 4),
+                        Text(categoryName),
+                      ],
+                    ),
+                    selected: selectedCategory == categoryName,
+                    onSelected: (selected) {
+                      setState(() {
+                        selectedCategory = selected ? categoryName : null;
+                      });
+                    },
+                  );
+                }).toList(),
+              ],
+            ),
           ],
         ),
       ),
       actions: [
         MyButton(
           text: "Save",
-          onPressed: () => widget.onSave(selectedColor, selectedDate, selectedTime, selectedRecurrence, selectedPriority),
+          onPressed: () => widget.onSave(selectedColor, selectedDate, selectedTime, selectedRecurrence, selectedPriority, selectedTags, selectedCategory),
         ),
         MyButton(text: "Cancel", onPressed: widget.onCancel),
       ],

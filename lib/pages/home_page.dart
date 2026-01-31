@@ -10,6 +10,8 @@ import 'package:to_do_app/util/group_tile.dart';
 import 'package:to_do_app/util/group_dialog.dart';
 import 'package:to_do_app/util/date_utils.dart' as date_utils;
 import 'package:to_do_app/util/priority_utils.dart';
+import 'package:to_do_app/util/tag_utils.dart';
+import 'package:to_do_app/util/category_utils.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -27,6 +29,8 @@ class _HomePageState extends State<HomePage> {
   // Filter and sort state
   String _filterStatus = 'all'; // 'all', 'completed', 'incomplete'
   String _sortBy = 'none'; // 'none', 'name', 'completed', 'createdDate', 'dueDate', 'priority'
+  String? _filterTag;
+  String? _filterCategory;
 
   @override
   void initState() {
@@ -93,6 +97,8 @@ class _HomePageState extends State<HomePage> {
             'recurrence': recurrence,
             'createdAt': DateTime.now().toIso8601String(),
             'priority': task['priority'] ?? 'medium',
+            'tags': task['tags'] ?? [],
+            'category': task['category'],
           });
         }
       }
@@ -100,7 +106,7 @@ class _HomePageState extends State<HomePage> {
     db.updateDatabase();
   }
 
-  void saveNewTask(String color, DateTime? dueDate, TimeOfDay? dueTime, String? recurrence, String priority) {
+  void saveNewTask(String color, DateTime? dueDate, TimeOfDay? dueTime, String? recurrence, String priority, List<String> tags, String? category) {
     if (_controller.text.trim().isEmpty) {
       return;
     }
@@ -116,6 +122,8 @@ class _HomePageState extends State<HomePage> {
         'recurrence': recurrence,
         'createdAt': DateTime.now().toIso8601String(),
         'priority': priority,
+        'tags': tags,
+        'category': category,
       });
       _controller.clear();
     });
@@ -773,6 +781,24 @@ class _HomePageState extends State<HomePage> {
       tasks = tasks.where((entry) => entry.value['completed'] == false).toList();
     }
 
+    // Apply tag filter
+    if (_filterTag != null) {
+      tasks = tasks.where((entry) {
+        final taskTags = entry.value['tags'];
+        if (taskTags is List) {
+          return taskTags.any((tag) => tag.toString().toLowerCase() == _filterTag!.toLowerCase());
+        }
+        return false;
+      }).toList();
+    }
+
+    // Apply category filter
+    if (_filterCategory != null) {
+      tasks = tasks.where((entry) {
+        return entry.value['category']?.toString().toLowerCase() == _filterCategory!.toLowerCase();
+      }).toList();
+    }
+
     // Apply sorting
     if (_sortBy == 'name') {
       tasks.sort((a, b) {
@@ -929,6 +955,72 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Filter by Tag',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      children: [
+                        ChoiceChip(
+                          label: const Text('All'),
+                          selected: _filterTag == null,
+                          onSelected: (selected) {
+                            updateBothStates(() => _filterTag = null);
+                          },
+                        ),
+                        ...getFrequentTags(db.toDoList, limit: 10).map((tag) {
+                          return ChoiceChip(
+                            label: Text(tag),
+                            selected: _filterTag == tag,
+                            backgroundColor: getTagColor(tag),
+                            onSelected: (selected) {
+                              updateBothStates(() => _filterTag = selected ? tag : null);
+                            },
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Filter by Category',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      children: [
+                        ChoiceChip(
+                          label: const Text('All'),
+                          selected: _filterCategory == null,
+                          onSelected: (selected) {
+                            updateBothStates(() => _filterCategory = null);
+                          },
+                        ),
+                        ...predefinedCategories.map((categoryData) {
+                          final categoryName = categoryData['name'] as String;
+                          final categoryIcon = categoryData['icon'] as IconData;
+                          return ChoiceChip(
+                            label: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(categoryIcon, size: 16),
+                                const SizedBox(width: 4),
+                                Text(categoryName),
+                              ],
+                            ),
+                            selected: _filterCategory == categoryName,
+                            onSelected: (selected) {
+                              updateBothStates(() => _filterCategory = selected ? categoryName : null);
+                            },
+                          );
+                        }).toList(),
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -939,6 +1031,8 @@ class _HomePageState extends State<HomePage> {
                     updateBothStates(() {
                       _filterStatus = 'all';
                       _sortBy = 'none';
+                      _filterTag = null;
+                      _filterCategory = null;
                     });
                   },
                   child: const Text('Reset'),
@@ -991,6 +1085,8 @@ class _HomePageState extends State<HomePage> {
                 dueTime: _parseTimeOfDay(task['dueTime']),
                 recurrence: task['recurrence'],
                 priority: task['priority'] ?? 'medium',
+                tags: task['tags'] != null ? List<String>.from(task['tags']) : [],
+                category: task['category'],
                 onChanged: (value) => checkBoxChanged(value, i),
                 deleteFunction: (context) => deleteTask(i),
                 onColorChanged: (color) => changeTaskColor(i, color),
@@ -1048,6 +1144,8 @@ class _HomePageState extends State<HomePage> {
                     dueTime: _parseTimeOfDay(task['dueTime']),
                     recurrence: task['recurrence'],
                     priority: task['priority'] ?? 'medium',
+                    tags: task['tags'] != null ? List<String>.from(task['tags']) : [],
+                    category: task['category'],
                     onChanged: (value) => checkBoxChanged(value, i),
                     deleteFunction: (context) => deleteTask(i),
                     onColorChanged: (color) => changeTaskColor(i, color),
@@ -1090,7 +1188,7 @@ class _HomePageState extends State<HomePage> {
             icon: Stack(
               children: [
                 const Icon(Icons.filter_list),
-                if (_filterStatus != 'all' || _sortBy != 'none')
+                if (_filterStatus != 'all' || _sortBy != 'none' || _filterTag != null || _filterCategory != null)
                   Positioned(
                     right: 0,
                     top: 0,

@@ -1247,62 +1247,112 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: db.toDoList.isEmpty && db.groups.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+      body: Column(
+        children: [
+          // Priority recommendation banner
+          if (db.toDoList.isNotEmpty && getHighPriorityRecommendations(db.toDoList).isNotEmpty)
+            Container(
+              margin: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.red.shade100, Colors.orange.shade100],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.red.shade300, width: 2),
+              ),
+              child: Row(
                 children: [
-                  Icon(
-                    Icons.task_alt,
-                    size: 80,
-                    color: Colors.grey[400],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No tasks yet!',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Create a group or add a task to get started',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[500],
+                  Icon(Icons.priority_high, color: Colors.red.shade700, size: 28),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Priority Alert',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red.shade900,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          getPriorityRecommendationMessage(db.toDoList),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.red.shade800,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-            )
-          : db.groups.isEmpty
-              ? ReorderableListView(
-                  padding: const EdgeInsets.only(bottom: 100, top: 20),
-                  onReorder: (oldIndex, newIndex) {
-                    // Reorder tasks when no groups exist
-                    setState(() {
-                      if (newIndex > oldIndex) {
-                        newIndex -= 1;
-                      }
-                      final task = db.toDoList.removeAt(oldIndex);
-                      db.toDoList.insert(newIndex, task);
-                      db.updateDatabase();
-                    });
-                  },
-                  children: buildTaskList(),
-                )
-              : ListView(
-                  padding: const EdgeInsets.only(bottom: 100, top: 20),
-                  children: buildTaskList().map((widget) {
-                    // Remove ReorderableDragStartListener wrapper when groups exist
-                    if (widget is ReorderableDragStartListener) {
-                      return widget.child;
-                    }
-                    return widget;
-                  }).toList(),
-                ),
+            ),
+          Expanded(
+            child: db.toDoList.isEmpty && db.groups.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.task_alt,
+                          size: 80,
+                          color: Colors.grey[400],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No tasks yet!',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Create a group or add a task to get started',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[500],
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : db.groups.isEmpty
+                    ? ReorderableListView(
+                        padding: const EdgeInsets.only(bottom: 100, top: 20),
+                        onReorder: (oldIndex, newIndex) {
+                          // Reorder tasks when no groups exist
+                          setState(() {
+                            if (newIndex > oldIndex) {
+                              newIndex -= 1;
+                            }
+                            final task = db.toDoList.removeAt(oldIndex);
+                            db.toDoList.insert(newIndex, task);
+                            db.updateDatabase();
+                          });
+                        },
+                        children: buildTaskList(),
+                      )
+                    : ListView(
+                        padding: const EdgeInsets.only(bottom: 100, top: 20),
+                        children: buildTaskList().map((widget) {
+                          // Remove ReorderableDragStartListener wrapper when groups exist
+                          if (widget is ReorderableDragStartListener) {
+                            return widget.child;
+                          }
+                          return widget;
+                        }).toList(),
+                      ),
+          ),
+        ],
+      ),
     );
   }
 }

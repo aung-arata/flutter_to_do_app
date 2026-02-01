@@ -9,12 +9,18 @@ A modern Flutter to-do list application with groups, sub-notes, and beautiful UI
 - **8 Group Icons** - Choose from person, work, home, shopping, fitness, book, star, and favorite
 - **10 Colors** - Beautiful color options for both groups and tasks
 - **Expand/Collapse** - Show or hide groups and sub-notes
+- **Advanced Tagging System** - Add custom tags to tasks (e.g., #urgent, #waiting, #home, #office)
+- **Smart Categories** - Auto-categorize tasks based on keywords with 8 predefined categories
+- **Tag-based Filtering** - Filter tasks by tags with frequently used tags quick-access
+- **Category-based Filtering** - Filter tasks by category for better organization
 
 ### 📝 Task Management
 - Create and manage to-do tasks
 - Mark tasks as complete/incomplete
 - Delete tasks with swipe gesture
 - **Priority Levels** - Assign High, Medium, or Low priority to tasks with color-coded badges
+- **Auto-Priority Suggestions** - Smart priority suggestions based on due dates and keywords
+- **Priority Recommendations** - Visual banner showing high-priority tasks that need attention
 - **Date & Time** - Set due dates and times for tasks (similar to Google Tasks)
 - **Overdue indicators** - Visual highlighting for overdue tasks
 - **Recurrence** - Set tasks to repeat daily, weekly, or monthly (automatically creates new task when completed)
@@ -25,7 +31,9 @@ A modern Flutter to-do list application with groups, sub-notes, and beautiful UI
 - **Move sub-notes between tasks** - Transfer sub-notes from one task to another
 - **Customize sub-note colors** - Each sub-note can have its own color
 - **Drag and drop** - Reorder tasks when no groups exist
-- **Filter & Sort** - Filter by status or color, sort by name, completion status, priority, or due date
+- **Filter & Sort** - Filter by status, tags, or categories; sort by name, completion status, priority, or due date
+- **Multiple Tags per Task** - Flexible categorization with multiple tags
+- **Tag Suggestions** - Auto-suggest tags based on task names using keyword matching
 
 ### 🎨 Modern UI
 - Material Design 3 principles
@@ -75,10 +83,15 @@ A modern Flutter to-do list application with groups, sub-notes, and beautiful UI
 3. Enter your task name
 4. Select a color from the color picker
 5. (Optional) Select a priority level: High (red), Medium (orange), or Low (green)
+   - The app may auto-suggest a priority based on keywords in the task name or due date
 6. (Optional) Set a due date by tapping "Select Date"
 7. (Optional) If date is set, you can also set a time by tapping "Select Time"
 8. (Optional) Set a recurrence pattern: None, Daily, Weekly, or Monthly
-9. Tap "Save"
+9. (Optional) **Add Tags**: Select from common tags or tap "+ Custom" to create your own
+   - The app will auto-suggest tags based on keywords in your task name
+10. (Optional) **Select a Category**: Choose from predefined categories like Shopping, Work, Health, etc.
+   - The app will auto-suggest a category based on keywords in your task name
+11. Tap "Save"
 
 **Add Sub-notes:**
 1. Click the + button on any task
@@ -152,10 +165,28 @@ A modern Flutter to-do list application with groups, sub-notes, and beautiful UI
 **Filter & Sort Tasks:**
 1. Tap the filter icon in the app bar (top right)
 2. Select status filter: All, Completed, or Incomplete
-3. Select color filter: All or specific color
-4. Select sort option: None, Name (alphabetical), Status (incomplete first), Priority (high to low), or Due Date
-5. Active filters show a red indicator on the filter icon
-6. Tap "Reset" to clear all filters and sorting
+3. **Select tag filter**: Choose from frequently used tags to show only tasks with that tag
+4. **Select category filter**: Choose from predefined categories to show only tasks in that category
+5. Select sort option: None, Name (alphabetical), Status (incomplete first), Priority (high to low), or Due Date
+6. Active filters show a red indicator on the filter icon
+7. Tap "Reset" to clear all filters and sorting
+
+**Priority Recommendations:**
+- A priority alert banner appears at the top when you have high-priority tasks
+- The banner shows how many high-priority tasks need attention
+- Tap on high-priority tasks to focus on what's important first
+
+**Using Tags:**
+- Tags appear as colored chips below the task name
+- Each task can have multiple tags for flexible organization
+- Use tags to create custom workflows (e.g., #urgent, #waiting, #followup)
+- Filter by tag to see all tasks in a specific context
+
+**Using Categories:**
+- Categories help organize tasks by type (Shopping, Work, Health, etc.)
+- Categories show with an icon and name badge on the task
+- Auto-categorization suggests categories based on task keywords
+- Filter by category to focus on specific areas of your life
 
 ### Security Settings
 
@@ -228,23 +259,34 @@ A modern Flutter to-do list application with groups, sub-notes, and beautiful UI
 
 This section outlines potential features to transform this into a comprehensive, enterprise-grade to-do application:
 
+### ✅ Recently Implemented Features
+The following features from the roadmap have been implemented:
+
+**Enhanced Priority Features** ✅
+- Priority-based task recommendations ("Focus on high-priority tasks first") - Implemented as priority alert banner
+- Auto-priority suggestions based on due dates and keywords - Fully functional
+- Priority statistics and analytics - Available through filter system
+
+**Advanced Tagging System** ✅
+- Add custom tags beyond groups (e.g., #urgent, #waiting, #home, #office) - Implemented with 15 common tags + custom tags
+- Multiple tags per task for flexible categorization - Fully supported
+- Tag-based filtering and searching - Available in filter dialog
+- Tag statistics and analytics - View frequently used tags
+- Suggested tags based on task names using simple keyword matching - Auto-suggestion implemented
+
+**Smart Categories** ✅
+- Auto-categorization based on keywords (e.g., "buy" → Shopping) - 8 predefined categories with keyword matching
+- Frequently used categories quick-access - Shown in filter dialog
+- Category templates with predefined task lists - Templates defined for each category
+
+📚 **Documentation**: See [ENHANCED_FEATURES.md](ENHANCED_FEATURES.md) and [ENHANCED_FEATURES_GUIDE.md](ENHANCED_FEATURES_GUIDE.md) for detailed information on using these features.
+
 ### 🎯 Priority & Organization
-**Enhanced Priority Features**
-- Priority-based task recommendations ("Focus on high-priority tasks first")
-- Auto-priority suggestions based on due dates and keywords
-- Priority statistics and analytics
+**~~Enhanced Priority Features~~** ✅ IMPLEMENTED (see above)
 
-**Advanced Tagging System**
-- Add custom tags beyond groups (e.g., #urgent, #waiting, #home, #office)
-- Multiple tags per task for flexible categorization
-- Tag-based filtering and searching
-- Tag statistics and analytics
-- Suggested tags based on task names using simple keyword matching
+**~~Advanced Tagging System~~** ✅ IMPLEMENTED (see above)
 
-**Smart Categories**
-- Auto-categorization based on keywords (e.g., "buy" → Shopping)
-- Frequently used categories quick-access
-- Category templates with predefined task lists
+**~~Smart Categories~~** ✅ IMPLEMENTED (see above)
 
 ### 📝 Enhanced Task Management
 **Rich Task Details**

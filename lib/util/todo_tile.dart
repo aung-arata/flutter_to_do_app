@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:to_do_app/util/color_utils.dart';
 import 'package:to_do_app/util/priority_utils.dart';
+import 'package:to_do_app/util/tag_utils.dart';
+import 'package:to_do_app/util/category_utils.dart';
 
 class ToDoTile extends StatefulWidget {
+  // Maximum number of tags to display on the task tile
+  static const int maxDisplayedTags = 3;
+  
   final String taskName;
   final bool taskCompleted;
   final Function(bool?)? onChanged;
@@ -24,6 +29,8 @@ class ToDoTile extends StatefulWidget {
   final String? recurrence;
   final String priority;
   final Function(String)? onPriorityChanged;
+  final List<String>? tags;
+  final String? category;
 
   const ToDoTile({
     super.key,
@@ -47,6 +54,8 @@ class ToDoTile extends StatefulWidget {
     this.recurrence,
     this.priority = "medium",
     this.onPriorityChanged,
+    this.tags,
+    this.category,
   });
 
   @override
@@ -469,6 +478,63 @@ class _ToDoTileState extends State<ToDoTile> {
                               if (widget.dueDate != null) ...[
                                 const SizedBox(height: 4),
                                 _buildDateTimeDisplay(),
+                              ],
+                              if (widget.tags != null && widget.tags!.isNotEmpty) ...[
+                                const SizedBox(height: 4),
+                                Wrap(
+                                  spacing: 4,
+                                  runSpacing: 4,
+                                  children: widget.tags!.take(ToDoTile.maxDisplayedTags).map((tag) {
+                                    return Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: getTagColor(tag),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        tag,
+                                        style: const TextStyle(
+                                          fontSize: 9,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black87,
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ],
+                              if (widget.category != null) ...[
+                                const SizedBox(height: 4),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: getCategoryColor(widget.category!).withOpacity(0.3),
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color: getCategoryColor(widget.category!),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        getCategoryIcon(widget.category!),
+                                        size: 10,
+                                        color: getCategoryColor(widget.category!),
+                                      ),
+                                      const SizedBox(width: 2),
+                                      Text(
+                                        widget.category!,
+                                        style: TextStyle(
+                                          fontSize: 9,
+                                          fontWeight: FontWeight.bold,
+                                          color: getCategoryColor(widget.category!),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ],
                           ),

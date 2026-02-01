@@ -36,6 +36,8 @@ class ToDoDatabase {
         "recurrence": null,
         "createdAt": DateTime.now().toIso8601String(),
         "priority": "medium",
+        "tags": [],
+        "category": null,
       },
       {
         "name": "Do Exercise",
@@ -48,6 +50,8 @@ class ToDoDatabase {
         "recurrence": null,
         "createdAt": DateTime.now().toIso8601String(),
         "priority": "medium",
+        "tags": [],
+        "category": null,
       },
     ];
   }
@@ -114,6 +118,12 @@ class ToDoDatabase {
           }
           if (!item.containsKey("priority")) {
             item["priority"] = "medium";
+          }
+          if (!item.containsKey("tags")) {
+            item["tags"] = [];
+          }
+          if (!item.containsKey("category")) {
+            item["category"] = null;
           }
           
           // Migrate sub-notes to include color field
